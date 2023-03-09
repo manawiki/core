@@ -53,6 +53,9 @@ import { DotLoader } from "~/components/DotLoader";
 import { InlineEditor } from "./InlineEditor";
 import { PostHeaderEdit } from "./PostHeaderEdit";
 import { postSchema } from "./postSchema";
+import { RoomProvider } from "~/liveblocks.config";
+import { LiveList, LiveObject } from "@liveblocks/client";
+import { ClientSideSuspense } from "@liveblocks/react";
 
 type Mode = "edit" | "preview";
 
@@ -471,8 +474,8 @@ function PostEdit() {
    //Get data. This is necessary to determine whether the user should see the draft notes or not.
    const data = useLoaderData<typeof loader>();
    const { post } = data;
-   const notes = (data.notes.length ? data.notes : post.notes) as Note[];
 
+   const notes = (data.notes.length ? data.notes : post.notes) as Note[];
    return (
       <main
          className="post-content relative min-h-screen  
@@ -480,39 +483,63 @@ function PostEdit() {
       >
          <PostHeaderEdit post={post} />
          <Suspense fallback={<div>Loading...</div>}>
-            {notes.map((note, noteIdx) => (
-               <div key={note.id} className="group">
-                  {/* @ts-expect-error */}
-                  {note?.ui?.id == "textarea" ? (
-                     <InlineEditor note={note} index={noteIdx} notes={notes} />
-                  ) : (
-                     <>
-                        {/* Render noteview with edit button */}
-                        <Link
-                           to={`edit/${note.id}`}
-                           prefetch="intent"
-                           className="absolute right-0 hidden rounded bg-blue-500 px-2 py-1 
-                           text-xs font-bold text-white group-hover:inline-block"
+            <RoomProvider
+               id={post.id}
+               initialPresence={{
+                  selectedBlockId: null,
+               }}
+               initialStorage={{
+                  notes: new LiveList(notes),
+               }}
+            >
+               {notes.map((note, noteIdx) => (
+                  <div key={note.id} className="group">
+                     {/* @ts-expect-error */}
+                     {note?.ui?.id == "textarea" ? (
+                        <ClientSideSuspense
+                           fallback={
+                              <div>
+                                 <div className="max-w-[728px] mx-auto max-desktop:px-3 mb-6 animate-pulse h-14 rounded-lg bg-2" />
+                              </div>
+                           }
                         >
-                           Edit
-                        </Link>
-                        <NoteViewer
-                           className="post-content outline-1 outline-offset-8 
+                           {() => (
+                              <InlineEditor
+                                 note={note}
+                                 index={noteIdx}
+                                 notes={notes}
+                              />
+                           )}
+                        </ClientSideSuspense>
+                     ) : (
+                        <>
+                           {/* Render noteview with edit button */}
+                           <Link
+                              to={`edit/${note.id}`}
+                              prefetch="intent"
+                              className="absolute right-0 hidden rounded bg-blue-500 px-2 py-1 
+                           text-xs font-bold text-white group-hover:inline-block"
+                           >
+                              Edit
+                           </Link>
+                           <NoteViewer
+                              className="post-content outline-1 outline-offset-8 
                            outline-zinc-300 group-hover:cursor-pointer 
                            group-hover:rounded-sm group-hover:outline-dotted 
                            dark:outline-zinc-600"
-                           note={note}
-                           //insert custom components here
-                           components={
-                              {
-                                 // h2: (props) => <h2 className="text-2xl" {...props} />,
+                              note={note}
+                              //insert custom components here
+                              components={
+                                 {
+                                    // h2: (props) => <h2 className="text-2xl" {...props} />,
+                                 }
                               }
-                           }
-                        />
-                     </>
-                  )}
-               </div>
-            ))}
+                           />
+                        </>
+                     )}
+                  </div>
+               ))}
+            </RoomProvider>
          </Suspense>
       </main>
    );

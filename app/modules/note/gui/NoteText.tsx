@@ -1,5 +1,5 @@
 import { useDocChanged, useHelpers } from "@remirror/react";
-import { MarkdownEditorCustom } from "../inline/MarkdownEditorCustom";
+import { MarkdownEditor } from "../inline/MarkdownEditor";
 import { useCallback } from "react";
 
 interface OnChangeHTMLProps {
@@ -37,13 +37,13 @@ export const NoteText = ({
    theme: "yellow" | "emerald" | "purple";
 }) => {
    return (
-      <MarkdownEditorCustom
+      <MarkdownEditor
          theme={theme}
          initialContent={defaultValue}
          placeholder="Enter text..."
       >
          <OnChangeMD onChange={onChange} />
          <SaveButton />
-      </MarkdownEditorCustom>
+      </MarkdownEditor>
    );
 };

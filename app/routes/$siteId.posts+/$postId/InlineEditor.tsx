@@ -19,6 +19,16 @@ import { NoteViewer } from "~/modules/note/components/NoteViewer";
 import { NoteText } from "~/modules/note/gui/NoteText";
 import { isProcessing } from "~/utils";
 
+import {
+   RoomProvider,
+   useList,
+   useMutation,
+   useOthers,
+   useRoom,
+   useStorage,
+   useUpdateMyPresence,
+} from "~/liveblocks.config";
+
 const showNoteStyle = `w-9 h-9 rounded-full flex dark:!text-zinc-400 !text-zinc-500
 items-center justify-center bg-3 border border-color transition
 duration-300 active:translate-y-0.5`;
@@ -123,13 +133,13 @@ const View = ({
 };
 
 const Editor = ({
+   index,
    note,
-   setIsActive,
    isNoteAdding,
    fetcher,
 }: {
+   index: number;
    note: Note;
-   setIsActive: (prevCheck: boolean) => void;
    isNoteAdding: boolean | undefined;
    fetcher: FetcherWithComponents<any>;
 }) => {
@@ -137,6 +147,11 @@ const Editor = ({
    const [showNoteOptions, setShowNoteOptions] = useState(false);
    const [inlineValue, setInlineValue] = useState({ mdx: "", id: "" });
    const debouncedInlineSaveValue = useDebouncedValue(inlineValue, 500);
+
+   const updateLive = useMutation(({ storage }, newValue) => {
+      const mutableNote = storage.get("notes");
+      mutableNote.set(index, { mdx: newValue });
+   }, []);
 
    useEffect(() => {
       if (!isMount) {
@@ -148,8 +163,11 @@ const Editor = ({
                action: `/edit/${id}`,
             }
          );
+         updateLive(mdx);
       }
    }, [debouncedInlineSaveValue]);
+
+   const liveMdx = useStorage((root) => root.notes[index].mdx);
 
    return (
       <div className="px-3 desktop:px-0 border-y my-10 pt-4 border-color relative">
@@ -222,7 +240,7 @@ const Editor = ({
             </div>
             <NoteText
                theme="emerald"
-               defaultValue={note.mdx}
+               defaultValue={liveMdx}
                onChange={(value: any) =>
                   setInlineValue({
                      mdx: value,
@@ -249,35 +267,37 @@ export const InlineEditor = ({
    const [isActive, setIsActive] = useState<boolean>(true);
    const lastIndex = notes.length - 1;
 
-   if (
-      (note.mdx == "" && index == 0) ||
-      (index == 0 && lastIndex == 0) ||
-      (index == lastIndex && note.mdx == "") ||
-      note.mdx == ""
-   ) {
-      return isActive ? (
-         <Editor
-            fetcher={fetcher}
-            note={note}
-            setIsActive={setIsActive}
-            isNoteAdding={isNoteAdding}
-         />
-      ) : (
-         <View
-            note={note}
-            setIsActive={setIsActive}
-            isNoteAdding={isNoteAdding}
-         />
-      );
-   }
-   return isActive ? (
-      <View note={note} setIsActive={setIsActive} isNoteAdding={isNoteAdding} />
-   ) : (
+   // if (
+   //    (note.mdx == "" && index == 0) ||
+   //    (index == 0 && lastIndex == 0) ||
+   //    (index == lastIndex && note.mdx == "") ||
+   //    note.mdx == ""
+   // ) {
+   //    return isActive ? (
+   //       <Editor
+   //          fetcher={fetcher}
+   //          note={note}
+   //          setIsActive={setIsActive}
+   //          isNoteAdding={isNoteAdding}
+   //       />
+   //    ) : (
+   //       <View
+   //          note={note}
+   //          setIsActive={setIsActive}
+   //          isNoteAdding={isNoteAdding}
+   //       />
+   //    );
+   // }
+   // return isActive ? (
+   //    <View note={note} setIsActive={setIsActive} isNoteAdding={isNoteAdding} />
+   // ) : (
+   return (
       <Editor
          fetcher={fetcher}
+         index={index}
          note={note}
-         setIsActive={setIsActive}
          isNoteAdding={isNoteAdding}
       />
    );
+   // );
 };

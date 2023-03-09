@@ -67,16 +67,20 @@ export async function action({
             depth: 2,
          });
 
+         const notes = post?.notes
+            ? [
+                 ...post?.notes.map((note) =>
+                    typeof note === "string" ? note : note.id
+                 ),
+                 note.id,
+              ]
+            : [note.id];
+
          await payload.update({
             collection: "posts",
             id: postId,
             data: {
-               notes: [
-                  ...post?.notes.map((note) =>
-                     typeof note === "string" ? note : note.id
-                  ),
-                  note.id,
-               ],
+               notes,
             },
             overrideAccess: false,
             user,
@@ -106,16 +110,20 @@ export async function action({
             depth: 2,
          });
 
+         const notes = post?.notes
+            ? [
+                 ...post?.notes.map((note) =>
+                    typeof note === "string" ? note : note.id
+                 ),
+                 note.id,
+              ]
+            : [note.id];
+
          return await payload.update({
             collection: "posts",
             id: postId,
             data: {
-               notes: [
-                  ...post?.notes.map((note) =>
-                     typeof note === "string" ? note : note.id
-                  ),
-                  note.id,
-               ],
+               notes,
             },
             overrideAccess: false,
             user,

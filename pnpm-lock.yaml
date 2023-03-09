@@ -8,6 +8,9 @@ importers:
       '@aws-sdk/lib-storage': ^3.267.0
       '@headlessui/react': ^1.7.7
       '@heroicons/react': ^2.0.15
+      '@liveblocks/client': ^1.0.1
+      '@liveblocks/node': ^1.0.1
+      '@liveblocks/react': ^1.0.1
       '@mdx-js/mdx': ^2.3.0
       '@mdx-js/react': ^2.3.0
       '@payloadcms/plugin-cloud-storage': ^1.0.12
@@ -82,6 +85,9 @@ importers:
       '@aws-sdk/lib-storage': 3.271.0_@aws-sdk+client-s3@3.271.0
       '@headlessui/react': 1.7.11_biqbaboplfbrettd7655fr4n2y
       '@heroicons/react': 2.0.15_react@18.2.0
+      '@liveblocks/client': 1.0.1
+      '@liveblocks/node': 1.0.1
+      '@liveblocks/react': 1.0.1_react@18.2.0
       '@mdx-js/mdx': 2.3.0
       '@mdx-js/react': 2.3.0_react@18.2.0
       '@payloadcms/plugin-cloud-storage': 1.0.14_dkmmbt7d52bu42jtpymb6jojje
@@ -3241,6 +3247,35 @@ packages:
   /@lingui/detect-locale/3.17.1:
     resolution: {integrity: sha512-3101jgqTtGaSYCLGnz8HxlVP+p3V6V0bE5iOlBFr0wylcii6+FgPGId26JIbAkx4ozraVcR455DMt/urDMAMEQ==}
     engines: {node: '>=14.0.0'}
+    dev: false
+
+  /@liveblocks/client/1.0.1:
+    resolution: {integrity: sha512-lU+A+v1bbvI6H/pOjo93G8LAf1HYM2yqZc4D/LCI6b/JiZT/3bMrJ2X8Or4Yc5DVmIK3T5Rumk2za9bSdcjBQQ==}
+    dependencies:
+      '@liveblocks/core': 1.0.1
+    dev: false
+
+  /@liveblocks/core/1.0.1:
+    resolution: {integrity: sha512-IwtVtp1ogmVJLW7KSmkI7J+8+pPg0FMNdFV71oCPAugmlZRxUer3MvdIBOW4ULFBgoBJOzAmcjWRDFsl3K7ADA==}
+    dev: false
+
+  /@liveblocks/node/1.0.1:
+    resolution: {integrity: sha512-VjFmuOnH3KR4+V5Ouen08KSRLzkp5bbyKx5SSwbiypqWXpQkM6X43ervHiN8RrJdLbpDkF4FX6vBnMjzHGklxA==}
+    dependencies:
+      node-fetch: 2.6.9
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@liveblocks/react/1.0.1_react@18.2.0:
+    resolution: {integrity: sha512-gG3gC5ECfYf0RbJObSkXtRSzH++mSW0Dt2dDcDzkscYHqTWs79wToHC7Jjd3xAT7qQIYLUddBJ0RBYk8jy/o6Q==}
+    peerDependencies:
+      react: ^16.14.0 || ^17 || ^18
+    dependencies:
+      '@liveblocks/client': 1.0.1
+      '@liveblocks/core': 1.0.1
+      react: 18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /@mdx-js/mdx/2.3.0:
