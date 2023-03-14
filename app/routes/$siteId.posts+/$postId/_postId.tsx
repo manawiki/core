@@ -53,6 +53,9 @@ import { DotLoader } from "~/components/DotLoader";
 import { InlineEditor } from "./InlineEditor";
 import { PostHeaderEdit } from "./PostHeaderEdit";
 import { postSchema } from "./postSchema";
+import { Editor } from "./Editor";
+import { RoomProvider, useStorage } from "~/liveblocks.config";
+import { LiveList } from "@liveblocks/client";
 
 type Mode = "edit" | "preview";
 
@@ -479,41 +482,19 @@ function PostEdit() {
          max-laptop:pt-10 max-laptop:pb-20 laptop:py-12"
       >
          <PostHeaderEdit post={post} />
-         <Suspense fallback={<div>Loading...</div>}>
-            {notes.map((note, noteIdx) => (
-               <div key={note.id} className="group">
-                  {/* @ts-expect-error */}
-                  {note?.ui?.id == "textarea" ? (
-                     <InlineEditor note={note} index={noteIdx} notes={notes} />
-                  ) : (
-                     <>
-                        {/* Render noteview with edit button */}
-                        <Link
-                           to={`edit/${note.id}`}
-                           prefetch="intent"
-                           className="absolute right-0 hidden rounded bg-blue-500 px-2 py-1 
-                           text-xs font-bold text-white group-hover:inline-block"
-                        >
-                           Edit
-                        </Link>
-                        <NoteViewer
-                           className="post-content outline-1 outline-offset-8 
-                           outline-zinc-300 group-hover:cursor-pointer 
-                           group-hover:rounded-sm group-hover:outline-dotted 
-                           dark:outline-zinc-600"
-                           note={note}
-                           //insert custom components here
-                           components={
-                              {
-                                 // h2: (props) => <h2 className="text-2xl" {...props} />,
-                              }
-                           }
-                        />
-                     </>
-                  )}
-               </div>
-            ))}
-         </Suspense>
+         <RoomProvider
+            id={post.id}
+            initialPresence={{
+               selectedBlockId: null,
+            }}
+            // initialStorage={{
+            //    notes: new LiveList(notes),
+            // }}
+         >
+            <Suspense fallback={<div>Loading...</div>}>
+               <Editor />
+            </Suspense>
+         </RoomProvider>
       </main>
    );
 }
