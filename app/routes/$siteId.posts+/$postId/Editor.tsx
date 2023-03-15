@@ -1,6 +1,4 @@
-import { $getRoot, $getSelection } from "lexical";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -15,50 +13,50 @@ import {
 } from "@lexical/markdown";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { useMutation, useStorage } from "~/liveblocks.config";
-import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
+import { useDebouncedValue, useIsMount } from "~/hooks";
 
 const theme = {};
-// When the editor changes, you can get notified via the
-// LexicalOnChangePlugin!
+
+function SyncLocal({ liveMdx }: { liveMdx: string }) {
+   const [editor] = useLexicalComposerContext();
+   useEffect(() => {
+      if (liveMdx) {
+         const editorState = editor.parseEditorState(liveMdx);
+         editor.setEditorState(editorState);
+      }
+   }, [liveMdx]);
+   return null;
+}
 
 export const Editor = () => {
    const liveMdx = JSON.stringify(useStorage((root) => root.notes[0]));
+   const isMount = useIsMount();
+   const [inlineValue, setInlineValue] = useState(liveMdx);
+   const debouncedInlineSaveValue = useDebouncedValue(inlineValue, 500);
+
    const initialConfig = {
       namespace: "MyEditor",
       editorState: liveMdx,
       theme,
-      onError(error) {
+      onError(error: any) {
          throw error;
       },
    };
-
-   function Testing(): JSX.Element | null {
-      const [editor] = useLexicalComposerContext();
-      useEffect(() => {
-         console.log(editor);
-         const editorState = editor.parseEditorState(liveMdx);
-         const json = editorState.toJSON();
-         // updateLive(json);
-         // editor.setEditorState(editorState);
-      }, [liveMdx, editor]);
-
-      return null;
-   }
-
-   // function onChange(editorState) {
-   //    console.log(editorState);
-
-   //    editorState.read(() => {
-   //       const json = editorState.toJSON();
-   //       updateLive(json);
-   //       editorState.setEditorState(json);
-   //    });
-   // }
-
    const updateLive = useMutation(({ storage }, json) => {
       const mutableNote = storage.get("notes");
       mutableNote.set(0, json);
    }, []);
+
+   useEffect(() => {
+      if (!isMount) {
+         updateLive(inlineValue);
+      }
+   }, [debouncedInlineSaveValue]);
+
+   function onChange(editorState: any) {
+      const json = editorState.toJSON();
+      setInlineValue(json);
+   }
 
    return (
       <LexicalComposer initialConfig={initialConfig}>
@@ -67,9 +65,9 @@ export const Editor = () => {
             placeholder={<div>Enter some text...</div>}
             ErrorBoundary={LexicalErrorBoundary}
          />
-         {/* <OnChangePlugin onChange={onChange} /> */}
+         <OnChangePlugin onChange={onChange} />
          <HistoryPlugin />
-         <Testing />
+         <SyncLocal liveMdx={liveMdx} />
       </LexicalComposer>
    );
 };

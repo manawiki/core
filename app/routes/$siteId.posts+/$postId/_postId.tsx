@@ -56,6 +56,7 @@ import { postSchema } from "./postSchema";
 import { Editor } from "./Editor";
 import { RoomProvider, useStorage } from "~/liveblocks.config";
 import { LiveList } from "@liveblocks/client";
+import { ClientSideSuspense } from "@liveblocks/react";
 
 type Mode = "edit" | "preview";
 
@@ -491,9 +492,9 @@ function PostEdit() {
             //    notes: new LiveList(notes),
             // }}
          >
-            <Suspense fallback={<div>Loading...</div>}>
-               <Editor />
-            </Suspense>
+            <ClientSideSuspense fallback={"Loading"}>
+               {() => <Editor />}
+            </ClientSideSuspense>
          </RoomProvider>
       </main>
    );
