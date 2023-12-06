@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 
 import dt from "date-and-time";
-import { useTimer } from "react-timer-hook";
+import reactTimerHook from "react-timer-hook";
 import { useReadOnly } from "slate-react";
 
 import { convertTimeToDate } from "~/components/datepicker/util";
 
 import type { EventItemElement } from "../../core/types";
+
+const { useTimer } = reactTimerHook;
 
 export function CountdownTimer({ element }: { element: EventItemElement }) {
    const today = new Date();

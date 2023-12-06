@@ -9,7 +9,6 @@ import {
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/react";
 import AOS from "aos";
-import aosStyles from "aos/dist/aos.css";
 import clsx from "clsx";
 import { z } from "zod";
 import { zx } from "zodix";
@@ -22,9 +21,11 @@ import { useDebouncedValue } from "~/utils";
 import { fetchWithCache } from "~/utils/cache.server";
 
 import { Top } from "./components/top";
-import indexStyles from "./styles.css";
 import { LoggedOut, LoggedIn } from "../_auth+/src/components";
 import { FollowingListMobile } from "../_site+/$siteId+/src/components";
+
+import "aos/dist/aos.css";
+import "./styles.css";
 
 export const meta: MetaFunction = () => [
    { title: "Mana - A new kind of wiki" },
@@ -101,19 +102,10 @@ export async function loader({
    const sites = data.sites;
 
    return json(
-      { q, sites, dev: process.env.NODE_ENV === "development" ?? undefined },
+      { q, sites, dev: process.env.NODE_ENV === "development" },
       { headers: { "Cache-Control": "public, s-maxage=60, max-age=60" } },
    );
 }
-
-export const links: LinksFunction = () => [
-   //preload css makes it nonblocking to html renders
-   { rel: "preload", href: indexStyles, as: "style" },
-   { rel: "stylesheet", href: indexStyles },
-
-   { rel: "preload", href: aosStyles, as: "style" },
-   { rel: "stylesheet", href: aosStyles },
-];
 
 export default function IndexMain() {
    useEffect(() => {
@@ -137,7 +129,6 @@ export default function IndexMain() {
 
 const Discover = () => {
    const { q, sites, dev } = useLoaderData<typeof loader>() || {};
-
    const [query, setQuery] = useState(q);
    const debouncedValue = useDebouncedValue(query, 500);
    const [searchParams, setSearchParams] = useSearchParams({});
@@ -299,7 +290,6 @@ const Discover = () => {
                      ) : (
                         sites?.docs.map((site: Site) => (
                            <Link
-                              //don't reload document on dev
                               reloadDocument={!dev}
                               to={`/${site.slug}`}
                               key={site.id}

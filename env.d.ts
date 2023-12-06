@@ -1,5 +1,5 @@
-/// <reference types="@remix-run/dev" />
-/// <reference types="@remix-run/node/globals" />
+/// <reference types="@remix-run/node" />
+/// <reference types="vite/client" />
 
 import type { ServerBuild } from "@remix-run/node";
 import type { Payload } from "payload";
@@ -26,12 +26,12 @@ interface PayloadRequest extends Request {
 
 type GetLoadContextFunction = (
    req: PayloadRequest,
-   res: Response
+   res: Response,
 ) => Promise<AppLoadContext> | AppLoadContext;
 type RequestHandler = (
    req: Request,
    res: Response,
-   next: NextFunction
+   next: NextFunction,
 ) => Promise<void>;
 
 declare module "@remix-run/express" {
@@ -40,7 +40,7 @@ declare module "@remix-run/express" {
       getLoadContext,
       mode,
    }: {
-      build: ServerBuild;
+      build: ServerBuild | (() => Promise<ServerBuild>);
       getLoadContext?: GetLoadContextFunction;
       mode?: string;
    }): RequestHandler;

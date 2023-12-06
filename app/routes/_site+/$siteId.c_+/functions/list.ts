@@ -4,10 +4,11 @@ import { select } from "payload-query";
 
 import type { Site, User, Collection } from "~/db/payload-types";
 import { gqlFormat, gqlEndpoint } from "~/utils";
-import { cacheThis, gql, gqlRequestWithCache } from "~/utils/cache.server";
+import * as cache from "~/utils/cache.server";
 
 import type { CollectionsAllSchema } from "../$collectionId";
 
+const { cacheThis, gql, gqlRequestWithCache } = cache;
 export interface ListFetchType {
    params: Params;
    gql?: {

@@ -18,22 +18,22 @@ import {
    useMatches,
 } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
-import rdtStylesheet from "remix-development-tools/index.css";
 import { getToast } from "remix-toast";
-import { ExternalScripts } from "remix-utils/external-scripts";
+// import { ExternalScripts } from "remix-utils/external-scripts";
 import { Toaster, toast as notify } from "sonner";
 
 import { settings } from "mana-config";
-import customStylesheetUrl from "~/_custom/styles.css";
 import type { Site } from "~/db/payload-types";
-import fonts from "~/styles/fonts.css";
 import { ClientHintCheck, getHints, useTheme } from "~/utils/client-hints";
 import { useIsBot } from "~/utils/isBotProvider";
 import { getTheme } from "~/utils/theme.server";
 
-import tailwindStylesheetUrl from "./styles/global.css";
 import { i18nextServer } from "./utils/i18n";
-import { rdtClientConfig } from "../rdt.config";
+
+//css should be imported as side effect for vite
+import "./styles/global.css";
+import "~/_custom/styles.css";
+import "~/styles/fonts.css";
 
 export { ErrorBoundary } from "~/components/ErrorBoundary";
 
@@ -87,15 +87,6 @@ export const meta: MetaFunction = () => [
 ];
 
 export const links: LinksFunction = () => [
-   //preload css makes it nonblocking to html renders
-   { rel: "preload", href: fonts, as: "style", crossOrigin: "anonymous" },
-   { rel: "preload", href: tailwindStylesheetUrl, as: "style" },
-   { rel: "preload", href: customStylesheetUrl, as: "style" },
-
-   { rel: "stylesheet", href: fonts, crossOrigin: "anonymous" },
-   { rel: "stylesheet", href: tailwindStylesheetUrl },
-   { rel: "stylesheet", href: customStylesheetUrl },
-
    //add preconnects to cdn to improve first bits
    {
       rel: "preconnect",
@@ -118,9 +109,9 @@ export const links: LinksFunction = () => [
          settings.siteId ? `${settings.siteId}-static` : "static"
       }.mana.wiki`,
    },
-   ...(process.env.NODE_ENV === "development"
-      ? [{ rel: "stylesheet", href: rdtStylesheet }]
-      : []),
+   // ...(process.env.NODE_ENV === "development"
+   //    ? [{ rel: "stylesheet", href: rdtStylesheet }]
+   //    : []),
 ];
 
 export const handle = {
@@ -201,24 +192,15 @@ function App() {
             <Outlet />
             <Toaster theme={theme ?? "system"} />
             <ScrollRestoration />
-            {isBot ? null : <Scripts />}
-            <ExternalScripts />
+            {/* <ExternalScripts /> */}
             <LiveReload />
+            {isBot ? null : <Scripts />}
          </body>
       </html>
    );
 }
 
-let AppExport = withMetronome(App);
-
-// Toggle Remix Dev Tools
-if (process.env.NODE_ENV === "development") {
-   const { withDevTools } = require("remix-development-tools");
-
-   AppExport = withDevTools(AppExport, rdtClientConfig);
-}
-
-export default AppExport;
+export default withMetronome(App);
 
 export function useChangeLanguage(locale: string) {
    let { i18n } = useTranslation();

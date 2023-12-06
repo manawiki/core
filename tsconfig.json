@@ -1,5 +1,5 @@
 {
-   "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
+   "include": ["env.d.ts", "**/*.ts", "**/*.tsx"],
    "compilerOptions": {
       /* Base Options: */
       "esModuleInterop": true,
@@ -9,13 +9,13 @@
       //  "verbatimModuleSyntax": true, https://twitter.com/mattpocockuk/status/1704041192588001444
       "allowJs": true,
       "resolveJsonModule": true,
-       "moduleDetection": "force",
+      "moduleDetection": "force",
 
       /* Strictness */
       "strict": true,
       "noUncheckedIndexedAccess": true,
 
-       /* If your code runs in the DOM: */
+      /* If your code runs in the DOM: */
       "lib": ["DOM", "DOM.Iterable", "ES2022"],
 
       /* If your code runs in Node.js: */
@@ -32,7 +32,7 @@
          "payload/generated-types": ["app/db/payload-types.ts"],
          "payload/generated-custom-types": ["app/db/payload-custom-types.ts"],
          "mana-config": ["mana.config.ts"]
-      },
+      }
    },
    "ts-node": {
       "swc": true
