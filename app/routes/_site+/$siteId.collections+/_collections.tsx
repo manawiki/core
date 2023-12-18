@@ -352,7 +352,7 @@ export const action: ActionFunction = async ({
                   customEntryTemplate,
                   customDatabase,
                   //@ts-ignore
-                  sections: [{ id: "main", name: "Main", showTitle: false }],
+                  sections: [{ id: "main", name: "Main", showTitle: false, subSections: [{id: "mainsubsection", name: "Main Subsection", type: "editor", showTitle: false}] }],
                },
                user,
                overrideAccess: false,
